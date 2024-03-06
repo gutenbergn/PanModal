@@ -5,7 +5,7 @@
 //  Copyright © 2019 Tiny Speck, Inc. All rights reserved.
 //
 
-#if os(iOS)
+#if os(iOS) || os(visionOS)
 import UIKit
 
 /**
@@ -42,7 +42,9 @@ public class PanModalPresentationAnimator: NSObject {
     /**
      Haptic feedback generator (during presentation)
      */
+    #if !os(visionOS)
     private var feedbackGenerator: UISelectionFeedbackGenerator?
+    #endif
 
     // MARK: - Initializers
 
@@ -54,8 +56,10 @@ public class PanModalPresentationAnimator: NSObject {
          Prepare haptic feedback, only during the presentation state
          */
         if case .presentation = transitionStyle {
+            #if !os(visionOS)
             feedbackGenerator = UISelectionFeedbackGenerator()
             feedbackGenerator?.prepare()
+            #endif
         }
     }
 
@@ -86,7 +90,9 @@ public class PanModalPresentationAnimator: NSObject {
 
         // Haptic feedback
         if presentable?.isHapticFeedbackEnabled == true {
+            #if !os(visionOS)
             feedbackGenerator?.selectionChanged()
+            #endif
         }
 
         PanModalAnimator.animate({
@@ -95,7 +101,9 @@ public class PanModalPresentationAnimator: NSObject {
             // Calls viewDidAppear and viewDidDisappear
             fromVC.endAppearanceTransition()
             transitionContext.completeTransition(didComplete)
+            #if !os(visionOS)
             self?.feedbackGenerator = nil
+            #endif
         }
     }
 

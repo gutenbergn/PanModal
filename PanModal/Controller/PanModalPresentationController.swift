@@ -5,7 +5,7 @@
 //  Copyright © 2019 Tiny Speck, Inc. All rights reserved.
 //
 
-#if os(iOS)
+#if os(iOS) || os(visionOS)
 import UIKit
 
 /**
@@ -192,7 +192,9 @@ open class PanModalPresentationController: UIPresentationController {
 
         coordinator.animate(alongsideTransition: { [weak self] _ in
             self?.backgroundView.dimState = .max
+            #if !os(visionOS)
             self?.presentedViewController.setNeedsStatusBarAppearanceUpdate()
+            #endif
         })
     }
 
@@ -217,7 +219,9 @@ open class PanModalPresentationController: UIPresentationController {
         coordinator.animate(alongsideTransition: { [weak self] _ in
             self?.dragIndicatorView.alpha = 0.0
             self?.backgroundView.dimState = .off
+            #if !os(visionOS)
             self?.presentingViewController.setNeedsStatusBarAppearanceUpdate()
+            #endif
         })
     }
 
@@ -458,7 +462,9 @@ private extension PanModalPresentationController {
          Set the appropriate contentInset as the configuration within this class
          offsets it
          */
+        #if !os(visionOS)
         scrollView.contentInset.bottom = presentingViewController.bottomLayoutGuide.length
+        #endif
 
         /**
          As we adjust the bounds during `handleScrollViewTopBounce`
@@ -864,7 +870,9 @@ private extension PanModalPresentationController {
 
         // Improve performance by rasterizing the layer
         view.layer.shouldRasterize = true
+        #if !os(visionOS)
         view.layer.rasterizationScale = UIScreen.main.scale
+        #endif
     }
 
     /**

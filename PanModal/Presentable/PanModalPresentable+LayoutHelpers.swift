@@ -5,7 +5,7 @@
 //  Copyright © 2018 Tiny Speck, Inc. All rights reserved.
 //
 
-#if os(iOS)
+#if os(iOS) || os(visionOS)
 import UIKit
 
 /**
@@ -27,11 +27,14 @@ extension PanModalPresentable where Self: UIViewController {
      Gives us the safe area inset from the top.
      */
     var topLayoutOffset: CGFloat {
-
+        #if !os(visionOS)
         guard let rootVC = rootViewController
             else { return 0}
 
         if #available(iOS 11.0, *) { return rootVC.view.safeAreaInsets.top } else { return rootVC.topLayoutGuide.length }
+        #else
+        return 0
+        #endif
     }
 
     /**
@@ -39,11 +42,14 @@ extension PanModalPresentable where Self: UIViewController {
      Gives us the safe area inset from the bottom.
      */
     var bottomLayoutOffset: CGFloat {
-
+        #if !os(visionOS)
        guard let rootVC = rootViewController
             else { return 0}
 
         if #available(iOS 11.0, *) { return rootVC.view.safeAreaInsets.bottom } else { return rootVC.bottomLayoutGuide.length }
+        #else
+        return 0
+        #endif
     }
 
     /**
@@ -101,8 +107,13 @@ extension PanModalPresentable where Self: UIViewController {
             return bottomYPos - height
         case .intrinsicHeight:
             view.layoutIfNeeded()
+            #if !os(visionOS)
             let targetSize = CGSize(width: (presentedVC?.containerView?.bounds ?? UIScreen.main.bounds).width,
                                     height: UIView.layoutFittingCompressedSize.height)
+            #else
+            let targetSize = CGSize(width: (presentedVC?.containerView?.bounds ?? .zero).width,
+                                    height: UIView.layoutFittingCompressedSize.height)
+            #endif
             let intrinsicHeight = view.systemLayoutSizeFitting(targetSize).height
             return bottomYPos - (intrinsicHeight + bottomLayoutOffset)
         }
@@ -113,7 +124,11 @@ extension PanModalPresentable where Self: UIViewController {
         guard let application = UIApplication.value(forKeyPath: #keyPath(UIApplication.shared)) as? UIApplication
             else { return nil }
 
+        #if !os(visionOS)
         return application.keyWindow?.rootViewController
+        #else
+        return UIApplication.shared.connectedScenes.compactMap { ($0 as? UIWindowScene)?.keyWindow }.last?.rootViewController
+        #endif
     }
 
 }

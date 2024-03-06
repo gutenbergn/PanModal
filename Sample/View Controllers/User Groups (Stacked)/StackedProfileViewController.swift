@@ -89,7 +89,9 @@ class StackedProfileViewController: UIViewController, PanModalPresentable {
 
         roleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         roleLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 4.0).isActive = true
+        #if !os(visionOS)
         bottomLayoutGuide.topAnchor.constraint(greaterThanOrEqualTo: roleLabel.bottomAnchor).isActive = true
+        #endif
     }
 
     // MARK: - Pan Modal Presentable
